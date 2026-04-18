@@ -3,50 +3,67 @@ using UnityEngine;
 public class BallController : MonoBehaviour
 {
     [Header("物理参数")]
-    [Tooltip("下落速度（初始速度）")]
-    [SerializeField] private float _fallSpeed = 0f;
-    
     [Tooltip("重力缩放")]
     [SerializeField] private float _gravityScale = 1f;
     
+    [Header("移动范围")]
+    [Tooltip("X轴移动范围")]
+    [SerializeField] private float _xMoveRange = 3f;
+    
+    [Tooltip("Y轴移动范围（最大高度）")]
+    [SerializeField] private float _yMoveRange = 5f;
+    
+    [Tooltip("地面高度（球的最小Y值）")]
+    [SerializeField] private float _groundHeight = 0.1f;
+    
     private Rigidbody _rigidbody;
-    private Vector3 _originalGravity;
+    private float _fixedZPosition;
     
     private void Awake()
     {
-        // 自动添加Rigidbody组件
+        // 获取已存在的Rigidbody组件（需要手动添加）
         _rigidbody = GetComponent<Rigidbody>();
-        if (_rigidbody == null)
-        {
-            _rigidbody = gameObject.AddComponent<Rigidbody>();
-            // 设置Rigidbody属性
-            _rigidbody.useGravity = true;
-            _rigidbody.isKinematic = false;
-            _rigidbody.collisionDetectionMode = CollisionDetectionMode.Continuous;
-        }
         
-        // 自动添加SphereCollider组件
-        SphereCollider collider = GetComponent<SphereCollider>();
-        if (collider == null)
-        {
-            collider = gameObject.AddComponent<SphereCollider>();
-            // 适配足球模型大小
-            collider.radius = 0.5f;
-        }
-        
-        // 保存原始重力值
-        _originalGravity = Physics.gravity;
-        
-        // 设置初始下落速度
-        _rigidbody.velocity = new Vector3(0, -_fallSpeed, 0);
+        // 固定Z轴位置
+        _fixedZPosition = transform.position.z;
     }
     
     private void FixedUpdate()
     {
-        // 应用自定义重力
-        if (_rigidbody != null && _rigidbody.useGravity)
+        if (_rigidbody != null)
         {
-            _rigidbody.AddForce(_originalGravity * _gravityScale, ForceMode.Acceleration);
+            // 应用重力缩放
+            Physics.gravity = new Vector3(0, -9.81f * _gravityScale, 0);
+            
+            Vector3 currentPosition = _rigidbody.position;
+            
+            // 限制球不能低于地面（只在极端情况下限制）
+            if (currentPosition.y < _groundHeight - 0.05f)
+            {
+                currentPosition.y = _groundHeight;
+                _rigidbody.position = currentPosition;
+            }
+            
+            // 限制X轴范围
+            if (Mathf.Abs(currentPosition.x) > _xMoveRange)
+            {
+                currentPosition.x = Mathf.Clamp(currentPosition.x, -_xMoveRange, _xMoveRange);
+                _rigidbody.position = currentPosition;
+            }
+            
+            // 限制Y轴最大高度
+            if (currentPosition.y > _yMoveRange)
+            {
+                currentPosition.y = _yMoveRange;
+                _rigidbody.position = currentPosition;
+            }
+            
+            // 固定Z轴位置（只在必要时限制）
+            if (Mathf.Abs(currentPosition.z - _fixedZPosition) > 0.01f)
+            {
+                currentPosition.z = _fixedZPosition;
+                _rigidbody.position = currentPosition;
+            }
         }
     }
     
@@ -55,13 +72,8 @@ public class BallController : MonoBehaviour
         // 检测是否碰撞到地面
         if (collision.gameObject.CompareTag("Ground"))
         {
-            Debug.Log("游戏结束");
+            // 临时注释游戏结束逻辑，方便测试弹跳
+            // Debug.Log("游戏结束");
         }
-    }
-    
-    // 更新重力缩放（当Inspector面板值变化时）
-    private void OnValidate()
-    {
-        // 无需在OnValidate中更新，因为FixedUpdate会实时应用重力缩放
     }
 }
