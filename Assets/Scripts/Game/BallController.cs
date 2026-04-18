@@ -5,6 +5,10 @@ public class BallController : MonoBehaviour
     [Header("物理参数")]
     [Tooltip("重力缩放")]
     [SerializeField] private float _gravityScale = 1f;
+    [Tooltip("地面反弹系数")]
+    [SerializeField] private float _groundBounceFactor = 0.7f;
+    [Tooltip("左右边界反弹系数")]
+    [SerializeField] private float _wallBounceFactor = 0.8f;
     
     [Header("移动范围")]
     [Tooltip("X轴移动范围")]
@@ -36,19 +40,30 @@ public class BallController : MonoBehaviour
             Physics.gravity = new Vector3(0, -9.81f * _gravityScale, 0);
             
             Vector3 currentPosition = _rigidbody.position;
+            Vector3 velocity = _rigidbody.velocity;
             
-            // 限制球不能低于地面（只在极端情况下限制）
-            if (currentPosition.y < _groundHeight - 0.05f)
+            // 限制球不能低于地面（反弹效果）
+            if (currentPosition.y < _groundHeight)
             {
                 currentPosition.y = _groundHeight;
                 _rigidbody.position = currentPosition;
+                // 反弹：反转Y方向速度
+                if (velocity.y < 0)
+                {
+                    velocity.y = -velocity.y * _groundBounceFactor;
+                    _rigidbody.velocity = velocity;
+                }
             }
             
-            // 限制X轴范围
+            // 限制X轴范围（反弹效果）
             if (Mathf.Abs(currentPosition.x) > _xMoveRange)
             {
+                float bounceX = currentPosition.x > 0 ? -1f : 1f;
                 currentPosition.x = Mathf.Clamp(currentPosition.x, -_xMoveRange, _xMoveRange);
                 _rigidbody.position = currentPosition;
+                // 反弹：反转X方向速度
+                velocity.x = bounceX * Mathf.Abs(velocity.x) * _wallBounceFactor;
+                _rigidbody.velocity = velocity;
             }
             
             // 限制Y轴最大高度

@@ -97,20 +97,60 @@ public class RealJuggleShoe : MonoBehaviour
                 Vector3 kickDirection = Vector3.up;
                 if (shoeVelocity.magnitude > 0.1f)
                 {
-                    kickDirection = (Vector3.up * 0.7f + shoeVelocity.normalized * 0.3f).normalized;
+                    // 调整方向计算，增加鞋子速度的影响
+                    kickDirection = (Vector3.up * 0.6f + shoeVelocity.normalized * 0.4f).normalized;
+                }
+                
+                // 计算实际踢力，根据鞋子速度动态调整
+                float actualKickForce = kickForce;
+                if (shoeVelocity.magnitude > 1.0f)
+                {
+                    // 根据鞋子速度增加踢力
+                    actualKickForce = kickForce * (1.0f + Mathf.Min(shoeVelocity.magnitude * 0.5f, 2.0f));
                 }
                 
                 // 施加踢力
-                ballRigidbody.AddForce(kickDirection * kickForce, ForceMode.Impulse);
+                ballRigidbody.AddForce(kickDirection * actualKickForce, ForceMode.Impulse);
                 
                 // 添加随机旋转
                 Vector3 randomTorque = new Vector3(
                     Random.Range(-0.5f, 0.5f),
                     Random.Range(-0.5f, 0.5f),
                     Random.Range(-0.5f, 0.5f)
-                ) * kickForce * 0.3f;
+                ) * actualKickForce * 0.3f;
                 
                 ballRigidbody.AddTorque(randomTorque, ForceMode.Impulse);
+            }
+        }
+    }
+    
+    // 添加OnTriggerEnter作为碰撞检测的补充，防止快速移动时穿过
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("Ball"))
+        {
+            Rigidbody ballRigidbody = other.gameObject.GetComponent<Rigidbody>();
+            if (ballRigidbody != null)
+            {
+                // 计算鞋子移动速度
+                Vector3 shoeVelocity = (transform.position - lastPosition) / Time.deltaTime;
+                
+                // 计算踢腿方向
+                Vector3 kickDirection = Vector3.up;
+                if (shoeVelocity.magnitude > 0.1f)
+                {
+                    kickDirection = (Vector3.up * 0.6f + shoeVelocity.normalized * 0.4f).normalized;
+                }
+                
+                // 计算实际踢力
+                float actualKickForce = kickForce;
+                if (shoeVelocity.magnitude > 1.0f)
+                {
+                    actualKickForce = kickForce * (1.0f + Mathf.Min(shoeVelocity.magnitude * 0.5f, 2.0f));
+                }
+                
+                // 施加踢力
+                ballRigidbody.AddForce(kickDirection * actualKickForce, ForceMode.Impulse);
             }
         }
     }
