@@ -6,10 +6,18 @@ public class Coin : MonoBehaviour
     private float _shrinkTime = 0.15f;
     private float _shrinkTimer = 0f;
     private Vector3 _initialScale;
+    private Vector3 _savedScale;
+    private Collider _collider;
+
+    private void Awake()
+    {
+        _collider = GetComponent<Collider>();
+        _savedScale = transform.localScale;
+    }
 
     private void Start()
     {
-        _initialScale = transform.localScale;
+        _initialScale = _savedScale;
     }
 
     private void Update()
@@ -22,15 +30,34 @@ public class Coin : MonoBehaviour
 
             if (progress >= 1f)
             {
-                Destroy(gameObject);
+                gameObject.SetActive(false);
             }
         }
     }
 
+    private void OnEnable()
+    {
+        _isShrinking = false;
+        _shrinkTimer = 0f;
+        transform.localScale = _savedScale;
+    }
+
     private void OnTriggerEnter(Collider other)
     {
+        if (!GameState.Instance.isGameStarted) return;
+
         if (other.CompareTag("Ball"))
         {
+            if (CoinManager.Instance != null)
+            {
+                CoinManager.Instance.AddCoins();
+            }
+
+            if (LevelManager.Instance != null)
+            {
+                LevelManager.Instance.OnCoinCollected();
+            }
+
             _isShrinking = true;
         }
     }

@@ -10,6 +10,10 @@ public class BallController : MonoBehaviour
     [Tooltip("左右边界反弹系数")]
     [SerializeField] private float _wallBounceFactor = 0.8f;
     
+    [Header("延时参数")]
+    [Tooltip("球开始下落的延时时间（秒）")]
+    [SerializeField] private float _startDelay = 1f;
+    
     [Header("移动范围")]
     [Tooltip("X轴移动范围")]
     [SerializeField] private float _xMoveRange = 3f;
@@ -22,32 +26,55 @@ public class BallController : MonoBehaviour
     
     private Rigidbody _rigidbody;
     private float _fixedZPosition;
+    private bool _hasStarted = false;
+    private bool _isGameOver = false;
     
     private void Awake()
     {
-        // 获取已存在的Rigidbody组件（需要手动添加）
         _rigidbody = GetComponent<Rigidbody>();
-        
-        // 固定Z轴位置
+        if (_rigidbody != null)
+        {
+            _rigidbody.isKinematic = true;
+        }
         _fixedZPosition = transform.position.z;
+    }
+    
+    public void Kick()
+    {
+        if (_hasStarted) return;
+        _hasStarted = true;
+        
+        if (_rigidbody != null && _rigidbody.isKinematic)
+        {
+            StartCoroutine(DelayedStart());
+        }
+    }
+    
+    private System.Collections.IEnumerator DelayedStart()
+    {
+        yield return new WaitForSeconds(_startDelay);
+        
+        if (_rigidbody != null)
+        {
+            _rigidbody.isKinematic = false;
+        }
     }
     
     private void FixedUpdate()
     {
-        if (_rigidbody != null)
+        if (_isGameOver) return;
+        
+        if (_rigidbody != null && GameState.Instance.isGameStarted && !_rigidbody.isKinematic)
         {
-            // 应用重力缩放
             Physics.gravity = new Vector3(0, -9.81f * _gravityScale, 0);
             
             Vector3 currentPosition = _rigidbody.position;
             Vector3 velocity = _rigidbody.velocity;
             
-            // 限制球不能低于地面（反弹效果）
             if (currentPosition.y < _groundHeight)
             {
                 currentPosition.y = _groundHeight;
                 _rigidbody.position = currentPosition;
-                // 反弹：反转Y方向速度
                 if (velocity.y < 0)
                 {
                     velocity.y = -velocity.y * _groundBounceFactor;
@@ -55,25 +82,21 @@ public class BallController : MonoBehaviour
                 }
             }
             
-            // 限制X轴范围（反弹效果）
             if (Mathf.Abs(currentPosition.x) > _xMoveRange)
             {
                 float bounceX = currentPosition.x > 0 ? -1f : 1f;
                 currentPosition.x = Mathf.Clamp(currentPosition.x, -_xMoveRange, _xMoveRange);
                 _rigidbody.position = currentPosition;
-                // 反弹：反转X方向速度
                 velocity.x = bounceX * Mathf.Abs(velocity.x) * _wallBounceFactor;
                 _rigidbody.velocity = velocity;
             }
             
-            // 限制Y轴最大高度
             if (currentPosition.y > _yMoveRange)
             {
                 currentPosition.y = _yMoveRange;
                 _rigidbody.position = currentPosition;
             }
             
-            // 固定Z轴位置（只在必要时限制）
             if (Mathf.Abs(currentPosition.z - _fixedZPosition) > 0.01f)
             {
                 currentPosition.z = _fixedZPosition;
@@ -84,11 +107,31 @@ public class BallController : MonoBehaviour
     
     private void OnCollisionEnter(Collision collision)
     {
-        // 检测是否碰撞到地面
+        if (!GameState.Instance.isGameStarted || _isGameOver) return;
+        
         if (collision.gameObject.CompareTag("Ground"))
         {
-            // 临时注释游戏结束逻辑，方便测试弹跳
-            // Debug.Log("游戏结束");
+            _isGameOver = true;
+            if (GameOverManager.Instance != null)
+            {
+                GameOverManager.Instance.GameOver();
+            }
+        }
+    }
+    
+    public void Reset()
+    {
+        _hasStarted = false;
+        _isGameOver = false;
+        
+        if (_rigidbody != null)
+        {
+            if (!_rigidbody.isKinematic)
+            {
+                _rigidbody.velocity = Vector3.zero;
+                _rigidbody.angularVelocity = Vector3.zero;
+            }
+            _rigidbody.isKinematic = true;
         }
     }
 }
