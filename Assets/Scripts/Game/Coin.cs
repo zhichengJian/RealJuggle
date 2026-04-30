@@ -58,6 +58,11 @@ public class Coin : MonoBehaviour
                 LevelManager.Instance.OnCoinCollected();
             }
 
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlayCoinSound();
+            }
+
             _isShrinking = true;
         }
     }

@@ -69,7 +69,11 @@ public class ShopManager : MonoBehaviour
             _shopPanel.SetActive(true);
         }
 
-        // 隐藏PlayButton
+        if (CoinManager.Instance != null)
+        {
+            CoinManager.Instance.UpdateCoinText();
+        }
+
         PlayButton playButton = FindObjectOfType<PlayButton>();
         if (playButton != null && playButton.gameObject != null)
         {

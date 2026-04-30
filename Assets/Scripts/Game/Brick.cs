@@ -57,6 +57,11 @@ public class Brick : MonoBehaviour
 
         if (collision.gameObject.CompareTag("Ball"))
         {
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlayBrickSound();
+            }
+
             _isShrinking = true;
         }
     }

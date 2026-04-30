@@ -333,6 +333,19 @@ public class LevelManager : MonoBehaviour
             GameState.Instance.isGameStarted = false;
         }
 
+        foreach (LevelConfig level in levels)
+        {
+            if (level.coinsParent != null)
+            {
+                level.coinsParent.SetActive(false);
+            }
+
+            if (level.brickParent != null)
+            {
+                level.brickParent.SetActive(false);
+            }
+        }
+
         LoadLevel(0);
 
         if (_juggleCountText != null)

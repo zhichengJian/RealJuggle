@@ -109,6 +109,11 @@ public class RealJuggleShoe : MonoBehaviour
                 {
                     LevelManager.Instance.OnBallJuggled();
                 }
+
+                if (AudioManager.Instance != null)
+                {
+                    AudioManager.Instance.PlayKickSound();
+                }
             }
         }
     }
@@ -141,6 +146,11 @@ public class RealJuggleShoe : MonoBehaviour
                 if (LevelManager.Instance != null)
                 {
                     LevelManager.Instance.OnBallJuggled();
+                }
+
+                if (AudioManager.Instance != null)
+                {
+                    AudioManager.Instance.PlayKickSound();
                 }
             }
         }
