@@ -6,7 +6,6 @@ public class CoinManager : MonoBehaviour
     [Header("金币设置")]
     [SerializeField] private Text _coinText;
     [SerializeField] private int _coinValue = 10;
-    [SerializeField] private int _maxCoins = 99999;
 
     public static CoinManager Instance { get; private set; }
 
@@ -43,19 +42,8 @@ public class CoinManager : MonoBehaviour
 
     public void UpdateCoinText()
     {
-        if (_coinText == null)
-        {
-            Debug.LogError("CoinManager: _coinText is null!");
-            return;
-        }
-        
-        if (SaveManager.Instance == null)
-        {
-            Debug.LogError("CoinManager: SaveManager.Instance is null!");
-            return;
-        }
+        if (_coinText == null || SaveManager.Instance == null) return;
         
         _coinText.text = SaveManager.Instance.Coins.ToString();
-        Debug.Log("CoinManager: Updated coin text to " + _coinText.text);
     }
 }

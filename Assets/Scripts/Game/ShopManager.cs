@@ -6,22 +6,16 @@ public class ShopManager : MonoBehaviour
     public static ShopManager Instance { get; private set; }
 
     [Header("商店界面")]
-    [Tooltip("商店Panel")]
     [SerializeField] private GameObject _shopPanel;
 
     [Header("商店按钮")]
-    [Tooltip("商店按钮图标")]
     [SerializeField] private GameObject _shopButton;
 
     [Header("商店物品")]
-    [Tooltip("球鞋选项列表")]
     [SerializeField] private GameObject[] _shoes;
-
-    [Tooltip("足球选项列表")]
     [SerializeField] private GameObject[] _balls;
 
     [Header("按钮")]
-    [Tooltip("返回主菜单按钮")]
     [SerializeField] private Button _mainMenuButton;
 
     private void Awake()
@@ -88,7 +82,6 @@ public class ShopManager : MonoBehaviour
             _shopPanel.SetActive(false);
         }
 
-        // 显示PlayButton
         PlayButton playButton = FindObjectOfType<PlayButton>();
         if (playButton != null && playButton.gameObject != null)
         {
