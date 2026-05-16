@@ -63,7 +63,7 @@ public class ShopItem : MonoBehaviour
         {
             _equipButton.onClick.RemoveAllListeners();
             _equipButton.onClick.AddListener(OnEquipClick);
-            
+
             if (_equippedDot == null)
             {
                 _equippedDot = _equipButton.GetComponent<Image>();
@@ -102,9 +102,9 @@ public class ShopItem : MonoBehaviour
 
             _isOwned = true;
             _isEquipped = false;
-            
+
             UpdateUI();
-            
+
             if (CoinManager.Instance != null)
             {
                 CoinManager.Instance.UpdateCoinText();
@@ -128,6 +128,46 @@ public class ShopItem : MonoBehaviour
 
         if (SaveManager.Instance == null) return;
 
+        if (_isEquipped)
+        {
+            UnEquip();
+        }
+        else
+        {
+            EquipSkin();
+        }
+    }
+
+    private void UnEquip()
+    {
+        string defaultId = GetDefaultItemId(_itemType);
+
+        switch (_itemType)
+        {
+            case ShopItemType.Jersey:
+                SaveManager.Instance.CurrentJersey = defaultId;
+                break;
+            case ShopItemType.Shoe:
+                SaveManager.Instance.CurrentShoe = defaultId;
+                break;
+            case ShopItemType.Ball:
+                SaveManager.Instance.CurrentBall = defaultId;
+                break;
+        }
+
+        if (SkinEquipManager.Instance != null)
+        {
+            SkinEquipManager.Instance.ApplySkin(_itemType, defaultId);
+        }
+
+        _isEquipped = false;
+        UpdateUI();
+
+        Debug.Log("ShopItem: UnEquipped, back to default");
+    }
+
+    private void EquipSkin()
+    {
         switch (_itemType)
         {
             case ShopItemType.Jersey:
@@ -144,7 +184,28 @@ public class ShopItem : MonoBehaviour
         _isEquipped = true;
         UpdateUI();
         NotifyEquipChange();
+
+        if (SkinEquipManager.Instance != null)
+        {
+            SkinEquipManager.Instance.ApplySkin(_itemType, _itemId);
+        }
+
         Debug.Log("ShopItem: Equipped " + _itemId);
+    }
+
+    private string GetDefaultItemId(ShopItemType type)
+    {
+        switch (type)
+        {
+            case ShopItemType.Jersey:
+                return "jersey_0";
+            case ShopItemType.Shoe:
+                return "shoe_0";
+            case ShopItemType.Ball:
+                return "ball_0";
+            default:
+                return "";
+        }
     }
 
     private void NotifyEquipChange()
@@ -175,7 +236,7 @@ public class ShopItem : MonoBehaviour
         if (_equippedDot != null)
         {
             _equippedDot.gameObject.SetActive(_isOwned);
-            
+
             if (_isEquipped)
             {
                 _equippedDot.color = new Color(1f, 1f, 1f, 1f);

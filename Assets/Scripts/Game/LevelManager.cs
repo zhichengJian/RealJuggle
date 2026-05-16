@@ -9,6 +9,10 @@ public class LevelConfig
     public string levelName;
     public int targetJuggleCount = 0;
     public int coinReward = 100;
+    
+    [Header("挑战模式")]
+    [Tooltip("启用挑战模式：无目标限制，只计数")]
+    public bool isChallengeMode = false;
 
     [Header("金币设置")]
     [Tooltip("金币父物体，将包含所有jinbi开头的金币物体")]
@@ -120,6 +124,11 @@ public class LevelManager : MonoBehaviour
                 LevelComplete();
             }
         }
+        else if (_currentLevel.isChallengeMode)
+        {
+            _currentJuggleCount++;
+            UpdateUI();
+        }
     }
 
     public void OnCoinCollected()
@@ -195,9 +204,16 @@ public class LevelManager : MonoBehaviour
 
     private void UpdateUI()
     {
-        if (_juggleCountText != null && _currentLevel.targetJuggleCount > 0)
+        if (_juggleCountText != null)
         {
-            _juggleCountText.text = _currentJuggleCount + "/" + _currentLevel.targetJuggleCount;
+            if (_currentLevel.targetJuggleCount > 0)
+            {
+                _juggleCountText.text = _currentJuggleCount + "/" + _currentLevel.targetJuggleCount;
+            }
+            else if (_currentLevel.isChallengeMode)
+            {
+                _juggleCountText.text = _currentJuggleCount.ToString();
+            }
         }
     }
 
@@ -236,7 +252,7 @@ public class LevelManager : MonoBehaviour
         ResetBall();
         ResetLevel();
 
-        if (_currentLevel.targetJuggleCount == 0)
+        if (_currentLevel.targetJuggleCount == 0 && !_currentLevel.isChallengeMode)
         {
             if (_currentLevel.coinsParent != null)
             {
@@ -254,7 +270,7 @@ public class LevelManager : MonoBehaviour
 
         if (_juggleCountText != null)
         {
-            _juggleCountText.enabled = _currentLevel.targetJuggleCount > 0;
+            _juggleCountText.enabled = (_currentLevel.targetJuggleCount > 0 || _currentLevel.isChallengeMode);
         }
 
         if (GameState.Instance != null)
@@ -285,6 +301,8 @@ public class LevelManager : MonoBehaviour
             _levelCompletePanel.SetActive(false);
         }
 
+        HideAllLevels();
+
         int nextLevelIndex = (_currentLevelIndex + 1) % levels.Length;
         LoadLevel(nextLevelIndex);
 
@@ -292,7 +310,7 @@ public class LevelManager : MonoBehaviour
 
         if (_juggleCountText != null)
         {
-            _juggleCountText.enabled = _currentLevel.targetJuggleCount > 0;
+            _juggleCountText.enabled = (_currentLevel.targetJuggleCount > 0 || _currentLevel.isChallengeMode);
         }
 
         if (GameState.Instance != null)
@@ -333,18 +351,7 @@ public class LevelManager : MonoBehaviour
             GameState.Instance.isGameStarted = false;
         }
 
-        foreach (LevelConfig level in levels)
-        {
-            if (level.coinsParent != null)
-            {
-                level.coinsParent.SetActive(false);
-            }
-
-            if (level.brickParent != null)
-            {
-                level.brickParent.SetActive(false);
-            }
-        }
+        HideAllLevels();
 
         LoadLevel(0);
 
@@ -358,6 +365,22 @@ public class LevelManager : MonoBehaviour
         ResetPlayButton();
     }
 
+    private void HideAllLevels()
+    {
+        foreach (LevelConfig level in levels)
+        {
+            if (level.coinsParent != null)
+            {
+                level.coinsParent.SetActive(false);
+            }
+
+            if (level.brickParent != null)
+            {
+                level.brickParent.SetActive(false);
+            }
+        }
+    }
+
     private void LoadLevel(int levelIndex)
     {
         _currentLevelIndex = levelIndex;
@@ -366,10 +389,22 @@ public class LevelManager : MonoBehaviour
 
         if (_juggleCountText != null)
         {
-            _juggleCountText.enabled = _currentLevel.targetJuggleCount > 0;
+            _juggleCountText.enabled = (_currentLevel.targetJuggleCount > 0 || _currentLevel.isChallengeMode);
         }
 
         if (_currentLevel.targetJuggleCount > 0)
+        {
+            if (_currentLevel.coinsParent != null)
+            {
+                _currentLevel.coinsParent.SetActive(false);
+            }
+
+            if (_currentLevel.brickParent != null)
+            {
+                _currentLevel.brickParent.SetActive(false);
+            }
+        }
+        else if (_currentLevel.isChallengeMode)
         {
             if (_currentLevel.coinsParent != null)
             {
@@ -542,5 +577,15 @@ public class LevelManager : MonoBehaviour
     public LevelConfig GetCurrentLevelConfig()
     {
         return _currentLevel;
+    }
+    
+    public int GetJuggleCount()
+    {
+        return _currentJuggleCount;
+    }
+    
+    public bool IsChallengeMode()
+    {
+        return _currentLevel != null && _currentLevel.isChallengeMode;
     }
 }

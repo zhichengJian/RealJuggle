@@ -72,12 +72,12 @@ public class SaveManager : MonoBehaviour
     {
         _data = new SaveData();
         _data.coins = 0;
-        _data.unlockedJerseys = new List<string>();
-        _data.unlockedShoes = new List<string>();
-        _data.unlockedBalls = new List<string>();
-        _data.currentJersey = "jersey_1";
-        _data.currentShoe = "shoe_1";
-        _data.currentBall = "ball_1";
+        _data.unlockedJerseys = new List<string> { "jersey_0" };
+        _data.unlockedShoes = new List<string> { "shoe_0" };
+        _data.unlockedBalls = new List<string> { "ball_0" };
+        _data.currentJersey = "jersey_0";
+        _data.currentShoe = "shoe_0";
+        _data.currentBall = "ball_0";
         Save();
         Debug.Log("SaveManager: New save created");
     }

@@ -9,6 +9,8 @@ public class BallController : MonoBehaviour
     [SerializeField] private float _groundBounceFactor = 0.7f;
     [Tooltip("左右边界反弹系数")]
     [SerializeField] private float _wallBounceFactor = 0.8f;
+    [Tooltip("砖块反弹系数")]
+    [SerializeField] private float _brickBounceFactor = 0.5f;
     
     [Header("延时参数")]
     [Tooltip("球开始下落的延时时间（秒）")]
@@ -116,6 +118,14 @@ public class BallController : MonoBehaviour
             {
                 GameOverManager.Instance.GameOver();
             }
+        }
+        else if (collision.gameObject.CompareTag("Brick"))
+        {
+            Vector3 velocity = _rigidbody.velocity;
+            ContactPoint contact = collision.contacts[0];
+            Vector3 normal = contact.normal;
+            velocity = Vector3.Reflect(velocity, normal) * _brickBounceFactor;
+            _rigidbody.velocity = velocity;
         }
     }
     
