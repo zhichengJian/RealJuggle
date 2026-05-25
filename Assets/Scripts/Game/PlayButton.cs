@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class PlayButton : MonoBehaviour
 {
@@ -11,12 +12,20 @@ public class PlayButton : MonoBehaviour
     private bool _hasStarted = false;
     private bool _isResetting = false;
 
+    private RectTransform _rectTransform;
+    private Image _buttonImage;
+    private TextMeshProUGUI _buttonText;
+
     private void Start()
     {
         if (button == null)
         {
             button = GetComponent<Button>();
         }
+
+        _rectTransform = GetComponent<RectTransform>();
+        _buttonImage = GetComponent<Image>();
+        _buttonText = GetComponentInChildren<TextMeshProUGUI>();
 
         if (button != null)
         {
@@ -32,17 +41,20 @@ public class PlayButton : MonoBehaviour
             return;
         }
 
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) || (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began))
         {
-            if (button != null && button.gameObject.activeInHierarchy && button.enabled)
+            if (button != null && button.gameObject.activeInHierarchy && button.enabled && _rectTransform != null)
             {
-                RectTransform rectTransform = button.GetComponent<RectTransform>();
-                if (rectTransform != null)
+                Vector2 clickPosition = Input.mousePosition;
+                    
+                if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
                 {
-                    if (RectTransformUtility.RectangleContainsScreenPoint(rectTransform, Input.mousePosition))
-                    {
-                        StartGame();
-                    }
+                    clickPosition = Input.GetTouch(0).position;
+                }
+                    
+                if (RectTransformUtility.RectangleContainsScreenPoint(_rectTransform, clickPosition))
+                {
+                    StartGame();
                 }
             }
         }
@@ -72,16 +84,14 @@ public class PlayButton : MonoBehaviour
             button.interactable = false;
             button.enabled = false;
 
-            Image buttonImage = button.GetComponent<Image>();
-            if (buttonImage != null)
+            if (_buttonImage != null)
             {
-                buttonImage.enabled = false;
+                _buttonImage.enabled = false;
             }
 
-            Text buttonText = button.GetComponentInChildren<Text>();
-            if (buttonText != null)
+            if (_buttonText != null)
             {
-                buttonText.enabled = false;
+                _buttonText.enabled = false;
             }
         }
 
@@ -134,16 +144,14 @@ public class PlayButton : MonoBehaviour
             button.interactable = true;
             button.enabled = true;
 
-            Image buttonImage = button.GetComponent<Image>();
-            if (buttonImage != null)
+            if (_buttonImage != null)
             {
-                buttonImage.enabled = true;
+                _buttonImage.enabled = true;
             }
 
-            Text buttonText = button.GetComponentInChildren<Text>();
-            if (buttonText != null)
+            if (_buttonText != null)
             {
-                buttonText.enabled = true;
+                _buttonText.enabled = true;
             }
         }
 

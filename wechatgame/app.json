@@ -1,0 +1,24 @@
+{
+  "pages": [
+    "index/index"
+  ],
+  "window": {
+    "backgroundTextStyle": "dark",
+    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarTitleText": "足球颠球",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#000000"
+  },
+  "game": {
+    "deviceOrientation": "portrait",
+    "showStatusBar": false,
+    "networkTimeout": {
+      "request": 10000,
+      "connectSocket": 10000,
+      "uploadFile": 10000,
+      "downloadFile": 10000
+    },
+    "usingComponents": true
+  },
+  "sitemapLocation": "sitemap.json"
+}

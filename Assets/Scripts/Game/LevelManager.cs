@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 [System.Serializable]
 public class LevelConfig
@@ -33,7 +34,7 @@ public class LevelManager : MonoBehaviour
     private bool _levelCompleted = false;
 
     [Header("UI引用")]
-    [SerializeField] private Text _juggleCountText;
+    [SerializeField] private TextMeshProUGUI _juggleCountText;
     [SerializeField] private GameObject _gameOverPanel;
     [SerializeField] private Button _restartButton;
     [SerializeField] private Button _mainMenuButton;

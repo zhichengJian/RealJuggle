@@ -1,10 +1,11 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class CoinManager : MonoBehaviour
 {
     [Header("金币设置")]
-    [SerializeField] private Text _coinText;
+    [SerializeField] private TextMeshProUGUI _coinText;
     [SerializeField] private int _coinValue = 10;
 
     public static CoinManager Instance { get; private set; }

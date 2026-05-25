@@ -1,0 +1,49 @@
+{
+  "description": "Unity微信小游戏项目配置",
+  "packOptions": {
+    "ignore": []
+  },
+  "setting": {
+    "urlCheck": false,
+    "es6": true,
+    "minified": true,
+    "postcss": true,
+    "preloadBackgroundData": false,
+    "minifyWXSS": true,
+    "showShadowRootLog": false,
+    "packNpmManually": false,
+    "enableEngineNative": false,
+    "packNpmRelationList": [],
+    "minifyWXML": true
+  },
+  "compileType": "game",
+  "libVersion": "2.0.0",
+  "appid": "",
+  "projectname": "Juggle",
+  "debugOptions": {
+    "hidedInDevtools": []
+  },
+  "scripts": {},
+  "staticServerOptions": {
+    "baseURL": "",
+    "servePath": ""
+  },
+  "isGameTourist": false,
+  "condition": {
+    "search": {
+      "list": []
+    },
+    "conversation": {
+      "list": []
+    },
+    "game": {
+      "list": []
+    },
+    "plugin": {
+      "list": []
+    },
+    "gamePlugin": {
+      "list": []
+    }
+  }
+}

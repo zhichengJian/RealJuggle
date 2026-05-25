@@ -1,0 +1,90 @@
+{
+  "description": "项目配置文件",
+  "setting": {
+    "urlCheck": false,
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "preloadBackgroundData": false,
+    "minified": true,
+    "newFeature": true,
+    "coverView": true,
+    "nodeModules": false,
+    "autoAudits": false,
+    "showShadowRootInWxmlPanel": true,
+    "scopeDataCheck": false,
+    "uglifyFileName": false,
+    "checkInvalidKey": true,
+    "checkSiteMap": true,
+    "uploadWithSourceMap": true,
+    "compileHotReLoad": false,
+    "useMultiFrameRuntime": true,
+    "useApiHook": false,
+    "disableUseStrict": false,
+    "babelSetting": {
+      "ignore": [
+        "webgl.wasm.framework.unityweb.js"
+      ],
+      "disablePlugins": [],
+      "outputPath": ""
+    },
+    "useIsolateContext": true,
+    "useCompilerModule": true,
+    "userConfirmedUseCompilerModuleSwitch": false,
+    "packNpmManually": false,
+    "packNpmRelationList": [],
+    "compileWorklet": false,
+    "minifyWXSS": true,
+    "minifyWXML": true,
+    "localPlugins": false,
+    "useCompilerPlugins": false,
+    "condition": true,
+    "swc": false,
+    "disableSWC": true
+  },
+  "compileType": "game",
+  "libVersion": "3.15.2",
+  "appid": "wxe71ad8fa4da9de09",
+  "projectname": "agame",
+  "simulatorType": "wechat",
+  "simulatorPluginLibVersion": {
+    "wxext14566970e7e9f62": "2.27.3"
+  },
+  "packOptions": {
+    "ignore": [
+      {
+        "value": ".plugincache",
+        "type": "folder"
+      },
+      {
+        "value": ".symbols.unityweb",
+        "type": "suffix"
+      },
+      {
+        "value": ".symbols.unityweb.br",
+        "type": "suffix"
+      }
+    ],
+    "include": []
+  },
+  "condition": {
+    "search": {
+      "current": -1,
+      "list": []
+    },
+    "conversation": {
+      "current": -1,
+      "list": []
+    },
+    "game": {
+      "currentL": -1,
+      "list": []
+    },
+    "miniprogram": {
+      "current": -1,
+      "list": []
+    }
+  },
+  "editorSetting": {},
+  "projectArchitecture": "multiPlatform"
+}

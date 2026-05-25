@@ -1,0 +1,11 @@
+<view class="container">
+  <canvas 
+    canvas-id="gameCanvas" 
+    id="gameCanvas"
+    class="game-canvas"
+    bindtouchstart="onTouchStart"
+    bindtouchmove="onTouchMove"
+    bindtouchend="onTouchEnd"
+    bindtouchcancel="onTouchCancel">
+  </canvas>
+</view>
