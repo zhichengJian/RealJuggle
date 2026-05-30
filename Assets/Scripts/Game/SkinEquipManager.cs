@@ -41,22 +41,23 @@ public class SkinEquipManager : MonoBehaviour
     {
         if (SaveManager.Instance == null) return;
 
-        ApplySkin(ShopItemType.Jersey, SaveManager.Instance.CurrentJersey);
-        ApplySkin(ShopItemType.Shoe, SaveManager.Instance.CurrentShoe);
-        ApplySkin(ShopItemType.Ball, SaveManager.Instance.CurrentBall);
+        ApplySkin(ItemType.Jersey, SaveManager.Instance.CurrentJersey);
+        ApplySkin(ItemType.Shoe, SaveManager.Instance.CurrentShoe);
+        ApplySkin(ItemType.Ball, SaveManager.Instance.CurrentBall);
     }
 
-    public void ApplySkin(ShopItemType type, string skinId)
+    public void ApplySkin(ItemType type, string skinId)
     {
+        Debug.Log($"SkinEquipManager.ApplySkin 被调用: type={type}, skinId={skinId}");
         switch (type)
         {
-            case ShopItemType.Jersey:
+            case ItemType.Jersey:
                 ApplyJerseySkin(skinId);
                 break;
-            case ShopItemType.Shoe:
+            case ItemType.Shoe:
                 ApplyShoeSkin(skinId);
                 break;
-            case ShopItemType.Ball:
+            case ItemType.Ball:
                 ApplyBallSkin(skinId);
                 break;
         }
@@ -103,13 +104,16 @@ public class SkinEquipManager : MonoBehaviour
 
     private Material GetMaterial(Material[] materials, string[] names, string skinId)
     {
+        Debug.Log($"查找材质: skinId={skinId}, materials长度={materials?.Length ?? 0}, names长度={names?.Length ?? 0}");
         for (int i = 0; i < names.Length; i++)
         {
             if (names[i] == skinId && i < materials.Length)
             {
+                Debug.Log($"找到材质: index={i}, material={materials[i]?.name}");
                 return materials[i];
             }
         }
+        Debug.LogError($"未找到材质: skinId={skinId}");
         return null;
     }
 }

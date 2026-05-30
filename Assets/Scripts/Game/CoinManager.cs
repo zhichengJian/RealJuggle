@@ -41,6 +41,32 @@ public class CoinManager : MonoBehaviour
         UpdateCoinText();
     }
 
+    public bool SpendCoins(int amount)
+    {
+        if (SaveManager.Instance != null)
+        {
+            bool success = SaveManager.Instance.SpendCoins(amount);
+            if (success)
+            {
+                UpdateCoinText();
+            }
+            return success;
+        }
+        return false;
+    }
+
+    public int CurrentCoins
+    {
+        get
+        {
+            if (SaveManager.Instance != null)
+            {
+                return SaveManager.Instance.Coins;
+            }
+            return 0;
+        }
+    }
+
     public void UpdateCoinText()
     {
         if (_coinText == null || SaveManager.Instance == null) return;

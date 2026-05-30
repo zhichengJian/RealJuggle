@@ -18,9 +18,9 @@ public class ShopButton : MonoBehaviour
 
     private void OpenShop()
     {
-        if (ShopManager.Instance != null)
+        if (ShopManager2.Instance != null)
         {
-            ShopManager.Instance.OpenShop();
+            ShopManager2.Instance.OpenShop();
         }
     }
 }

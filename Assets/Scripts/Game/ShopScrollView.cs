@@ -49,8 +49,19 @@ public class ShopScrollView : MonoBehaviour
     {
         if (_content == null) return;
         
+        HorizontalLayoutGroup layoutGroup = _content.GetComponent<HorizontalLayoutGroup>();
+        if (layoutGroup == null) return;
+
         int itemCount = _content.childCount;
-        float totalWidth = itemCount * (_itemWidth + _itemSpacing) - _itemSpacing;
+        if (itemCount == 0) return;
+
+        RectTransform firstChild = _content.GetChild(0) as RectTransform;
+        float itemWidth = firstChild != null ? firstChild.rect.width : _itemWidth;
+        float paddingLeft = layoutGroup.padding.left;
+        float paddingRight = layoutGroup.padding.right;
+        float itemSpacing = layoutGroup.spacing;
+
+        float totalWidth = paddingLeft + paddingRight + itemCount * (itemWidth + itemSpacing) - itemSpacing;
         _content.sizeDelta = new Vector2(totalWidth, _content.sizeDelta.y);
     }
 

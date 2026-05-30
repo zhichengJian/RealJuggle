@@ -10,7 +10,7 @@ public class LevelConfig
     public string levelName;
     public int targetJuggleCount = 0;
     public int coinReward = 100;
-    
+
     [Header("挑战模式")]
     [Tooltip("启用挑战模式：无目标限制，只计数")]
     public bool isChallengeMode = false;
@@ -509,7 +509,7 @@ public class LevelManager : MonoBehaviour
     {
         GameObject playObject = null;
         PlayButton playButton = null;
-        
+
         GameObject canvas = GameObject.Find("Canvas");
         if (canvas != null)
         {
@@ -523,11 +523,11 @@ public class LevelManager : MonoBehaviour
                 }
             }
         }
-        
+
         if (playObject != null)
         {
             playObject.SetActive(true);
-            
+
             playButton = playObject.GetComponent<PlayButton>();
             if (playButton == null)
             {
@@ -538,25 +538,25 @@ public class LevelManager : MonoBehaviour
                     playButton.button = btnComp;
                 }
             }
-            
+
             if (playButton != null)
             {
                 playButton.Reset();
             }
-            
+
             Button buttonComp = playObject.GetComponent<Button>();
             if (buttonComp != null)
             {
                 buttonComp.enabled = true;
                 buttonComp.interactable = true;
             }
-            
+
             Image imageComponent = playObject.GetComponent<Image>();
             if (imageComponent != null)
             {
                 imageComponent.enabled = true;
             }
-            
+
             Text textComponent = playObject.GetComponentInChildren<Text>();
             if (textComponent != null)
             {
@@ -564,9 +564,14 @@ public class LevelManager : MonoBehaviour
             }
         }
 
-        if (ShopManager.Instance != null)
+        if (ShopManager2.Instance != null)
         {
-            ShopManager.Instance.ShowShopButton();
+            ShopManager2.Instance.ShowShopButton();
+        }
+
+        if (ShopManager2.Instance != null)
+        {
+            ShopManager2.Instance.ShowShopButton();
         }
     }
 
@@ -579,12 +584,12 @@ public class LevelManager : MonoBehaviour
     {
         return _currentLevel;
     }
-    
+
     public int GetJuggleCount()
     {
         return _currentJuggleCount;
     }
-    
+
     public bool IsChallengeMode()
     {
         return _currentLevel != null && _currentLevel.isChallengeMode;

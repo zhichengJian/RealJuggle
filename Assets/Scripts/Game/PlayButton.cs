@@ -114,9 +114,9 @@ public class PlayButton : MonoBehaviour
             LevelManager.Instance.ShowJuggleCount();
         }
 
-        if (ShopManager.Instance != null)
+        if (ShopManager2.Instance != null)
         {
-            ShopManager.Instance.HideShopButton();
+            ShopManager2.Instance.HideShopButton();
         }
 
         GameObject ball = GameObject.FindGameObjectWithTag("Ball");
