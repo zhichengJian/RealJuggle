@@ -53,6 +53,12 @@ public class GameOverManager : MonoBehaviour
         {
             GameState.Instance.isGameStarted = false;
         }
+        
+        RealJuggleShoe[] shoes = FindObjectsOfType<RealJuggleShoe>();
+        foreach (RealJuggleShoe shoe in shoes)
+        {
+            shoe.ResetPosition();
+        }
     }
     
     public void RestartGame()

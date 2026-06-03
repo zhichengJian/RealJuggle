@@ -16,7 +16,23 @@ public class ShopManager2 : MonoBehaviour
     [Header("盲盒区域")]
     [SerializeField] private GameObject _blindBoxArea;
     [SerializeField] private Button _buyBtn;
-    [SerializeField] private int _price = 50;
+    [SerializeField] private TextMeshProUGUI _priceText;
+    
+    [Header("抽奖价格配置")]
+    [SerializeField] private int _firstPrice = 100;
+    [SerializeField] private int _secondPrice = 300;
+    [SerializeField] private int _normalPrice = 666;
+    
+    private int _drawCount = 0;
+    private int CurrentPrice
+    {
+        get
+        {
+            if (_drawCount == 0) return _firstPrice;
+            if (_drawCount == 1) return _secondPrice;
+            return _normalPrice;
+        }
+    }
 
     [Header("获得物品展示")]
     [SerializeField] private GameObject _rewardArea;
@@ -38,6 +54,14 @@ public class ShopManager2 : MonoBehaviour
     [Header("商店按钮")]
     [SerializeField] private GameObject _shopButton;
 
+    // 缓存协程等待对象
+    private WaitForSeconds _waitOneSecond = new WaitForSeconds(1f);
+
+    // 缓存皮肤ID前缀
+    private string[] _cachedShoeIds;
+    private string[] _cachedBallIds;
+    private string[] _cachedJerseyIds;
+
     private void Awake()
     {
         if (Instance == null)
@@ -47,6 +71,33 @@ public class ShopManager2 : MonoBehaviour
         else
         {
             Destroy(gameObject);
+        }
+        
+        // 缓存皮肤ID数组
+        CacheSkinIds();
+    }
+
+    private void CacheSkinIds()
+    {
+        // 缓存鞋子ID
+        _cachedShoeIds = new string[_shoeIcons.Length];
+        for (int i = 0; i < _shoeIcons.Length; i++)
+        {
+            _cachedShoeIds[i] = "shoe_" + (i + 1);
+        }
+        
+        // 缓存球ID
+        _cachedBallIds = new string[_ballIcons.Length];
+        for (int i = 0; i < _ballIcons.Length; i++)
+        {
+            _cachedBallIds[i] = "ball_" + (i + 1);
+        }
+        
+        // 缓存球衣ID
+        _cachedJerseyIds = new string[_jerseyIcons.Length];
+        for (int i = 0; i < _jerseyIcons.Length; i++)
+        {
+            _cachedJerseyIds[i] = "jersey_" + (i + 1);
         }
     }
 
@@ -78,6 +129,9 @@ public class ShopManager2 : MonoBehaviour
         
         // 刷新商店内的金币显示
         UpdateShopCoinText();
+        
+        // 刷新价格显示
+        UpdatePriceText();
         
         // 也刷新全局金币显示
         if (CoinManager.Instance != null)
@@ -131,40 +185,53 @@ public class ShopManager2 : MonoBehaviour
 
     private void BuyBlindBox()
     {
-        if (CoinManager.Instance.CurrentCoins < _price) return;
+        if (CoinManager.Instance.CurrentCoins < CurrentPrice) return;
         
-        bool spent = CoinManager.Instance.SpendCoins(_price);
+        bool spent = CoinManager.Instance.SpendCoins(CurrentPrice);
         if (!spent) return;
+        
+        _drawCount++;
         
         // 刷新商店内的金币显示
         UpdateShopCoinText();
+        
+        // 刷新价格显示
+        UpdatePriceText();
 
         StartCoroutine(OpenBlindBox());
+    }
+    
+    private void UpdatePriceText()
+    {
+        if (_priceText != null)
+        {
+            _priceText.text = CurrentPrice.ToString();
+        }
     }
 
     private IEnumerator OpenBlindBox()
     {
         var availableItems = new System.Collections.Generic.List<(ItemType type, int index, Sprite icon)>();
         
-        for (int i = 0; i < _shoeIcons.Length; i++)
+        for (int i = 0; i < _cachedShoeIds.Length; i++)
         {
-            if (!SaveManager.Instance.OwnsShoe("shoe_" + (i + 1)))
+            if (!SaveManager.Instance.OwnsShoe(_cachedShoeIds[i]))
             {
                 availableItems.Add((ItemType.Shoe, i, _shoeIcons[i]));
             }
         }
         
-        for (int i = 0; i < _ballIcons.Length; i++)
+        for (int i = 0; i < _cachedBallIds.Length; i++)
         {
-            if (!SaveManager.Instance.OwnsBall("ball_" + (i + 1)))
+            if (!SaveManager.Instance.OwnsBall(_cachedBallIds[i]))
             {
                 availableItems.Add((ItemType.Ball, i, _ballIcons[i]));
             }
         }
         
-        for (int i = 0; i < _jerseyIcons.Length; i++)
+        for (int i = 0; i < _cachedJerseyIds.Length; i++)
         {
-            if (!SaveManager.Instance.OwnsJersey("jersey_" + (i + 1)))
+            if (!SaveManager.Instance.OwnsJersey(_cachedJerseyIds[i]))
             {
                 availableItems.Add((ItemType.Jersey, i, _jerseyIcons[i]));
             }
@@ -183,16 +250,18 @@ public class ShopManager2 : MonoBehaviour
         int randomIndex = Random.Range(0, availableItems.Count);
         var selectedItem = availableItems[randomIndex];
         
+        string selectedSkinId = GetSkinId(selectedItem.type, selectedItem.index);
+        
         switch (selectedItem.type)
         {
             case ItemType.Shoe:
-                SaveManager.Instance.UnlockShoe("shoe_" + (selectedItem.index + 1));
+                SaveManager.Instance.UnlockShoe(selectedSkinId);
                 break;
             case ItemType.Ball:
-                SaveManager.Instance.UnlockBall("ball_" + (selectedItem.index + 1));
+                SaveManager.Instance.UnlockBall(selectedSkinId);
                 break;
             case ItemType.Jersey:
-                SaveManager.Instance.UnlockJersey("jersey_" + (selectedItem.index + 1));
+                SaveManager.Instance.UnlockJersey(selectedSkinId);
                 break;
         }
         
@@ -201,8 +270,8 @@ public class ShopManager2 : MonoBehaviour
             _rewardIcon.sprite = selectedItem.icon;
         }
         
-        // 停顿1秒后再显示奖励区域
-        yield return new WaitForSeconds(1f);
+        // 停顿1秒后再显示奖励区域（使用缓存的等待对象）
+        yield return _waitOneSecond;
         
         ShowRewardArea();
     }
@@ -220,9 +289,9 @@ public class ShopManager2 : MonoBehaviour
         if (_buyBtn == null) return;
         
         bool hasAvailable = false;
-        for (int i = 0; i < _shoeIcons.Length; i++)
+        for (int i = 0; i < _cachedShoeIds.Length; i++)
         {
-            if (!SaveManager.Instance.OwnsShoe("shoe_" + (i + 1)))
+            if (!SaveManager.Instance.OwnsShoe(_cachedShoeIds[i]))
             {
                 hasAvailable = true;
                 break;
@@ -231,9 +300,9 @@ public class ShopManager2 : MonoBehaviour
         
         if (!hasAvailable)
         {
-            for (int i = 0; i < _ballIcons.Length; i++)
+            for (int i = 0; i < _cachedBallIds.Length; i++)
             {
-                if (!SaveManager.Instance.OwnsBall("ball_" + (i + 1)))
+                if (!SaveManager.Instance.OwnsBall(_cachedBallIds[i]))
                 {
                     hasAvailable = true;
                     break;
@@ -243,9 +312,9 @@ public class ShopManager2 : MonoBehaviour
         
         if (!hasAvailable)
         {
-            for (int i = 0; i < _jerseyIcons.Length; i++)
+            for (int i = 0; i < _cachedJerseyIds.Length; i++)
             {
-                if (!SaveManager.Instance.OwnsJersey("jersey_" + (i + 1)))
+                if (!SaveManager.Instance.OwnsJersey(_cachedJerseyIds[i]))
                 {
                     hasAvailable = true;
                     break;
@@ -265,25 +334,25 @@ public class ShopManager2 : MonoBehaviour
             Destroy(_backpackContainer.GetChild(i).gameObject);
         }
 
-        for (int i = 0; i < _shoeIcons.Length; i++)
+        for (int i = 0; i < _cachedShoeIds.Length; i++)
         {
-            if (SaveManager.Instance.OwnsShoe("shoe_" + (i + 1)))
+            if (SaveManager.Instance.OwnsShoe(_cachedShoeIds[i]))
             {
                 CreateBackpackItem(_shoeIcons[i], ItemType.Shoe, i);
             }
         }
 
-        for (int i = 0; i < _ballIcons.Length; i++)
+        for (int i = 0; i < _cachedBallIds.Length; i++)
         {
-            if (SaveManager.Instance.OwnsBall("ball_" + (i + 1)))
+            if (SaveManager.Instance.OwnsBall(_cachedBallIds[i]))
             {
                 CreateBackpackItem(_ballIcons[i], ItemType.Ball, i);
             }
         }
 
-        for (int i = 0; i < _jerseyIcons.Length; i++)
+        for (int i = 0; i < _cachedJerseyIds.Length; i++)
         {
-            if (SaveManager.Instance.OwnsJersey("jersey_" + (i + 1)))
+            if (SaveManager.Instance.OwnsJersey(_cachedJerseyIds[i]))
             {
                 CreateBackpackItem(_jerseyIcons[i], ItemType.Jersey, i);
             }
@@ -448,11 +517,11 @@ public class ShopManager2 : MonoBehaviour
         switch (type)
         {
             case ItemType.Shoe:
-                return "shoe_" + (index + 1);
+                return _cachedShoeIds[index];
             case ItemType.Ball:
-                return "ball_" + (index + 1);
+                return _cachedBallIds[index];
             case ItemType.Jersey:
-                return "jersey_" + (index + 1);
+                return _cachedJerseyIds[index];
             default:
                 return "";
         }

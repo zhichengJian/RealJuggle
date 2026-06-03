@@ -7129,7 +7129,10 @@ MonoBehaviour:
   _shopCoinText: {fileID: 1146218825}
   _blindBoxArea: {fileID: 914734115}
   _buyBtn: {fileID: 1485777427}
-  _price: 50
+  _priceText: {fileID: 1040097640}
+  _firstPrice: 100
+  _secondPrice: 300
+  _normalPrice: 666
   _rewardArea: {fileID: 1814695349}
   _rewardIcon: {fileID: 426069190}
   _confirmBtn: {fileID: 967655857}
@@ -7693,7 +7696,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 50
+  m_text: 666
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

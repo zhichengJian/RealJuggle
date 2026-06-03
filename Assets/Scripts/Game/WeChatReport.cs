@@ -1,5 +1,4 @@
 using UnityEngine;
-using WeChatWASM;
 
 /// <summary>
 /// 微信小游戏数据上报脚本
@@ -10,14 +9,15 @@ public class WeChatReport : MonoBehaviour
 {
     void Start()
     {
-#if UNITY_WEIXINMINIGAME
-        // 上报游戏启动数据（审核和数据分析需要）
-        WX.ReportGameStart(new ReportGameStartOption
-        {
-            // 基础信息会自动填充，无需手动设置
-        });
-
-        UnityEngine.Debug.Log("[WeChatReport] 游戏启动数据已上报");
-#endif
+        // 暂时注释掉，等微信SDK正确导入后再恢复
+        // #if UNITY_WEIXINMINIGAME
+        // // 上报游戏启动数据（审核和数据分析需要）
+        // WX.ReportGameStart(new ReportGameStartOption
+        // {
+        //     // 基础信息会自动填充，无需手动设置
+        // });
+        // 
+        // UnityEngine.Debug.Log("[WeChatReport] 游戏启动数据已上报");
+        // #endif
     }
 }

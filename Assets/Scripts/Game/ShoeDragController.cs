@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class RealJuggleShoe : MonoBehaviour
 {
@@ -164,6 +165,30 @@ public class RealJuggleShoe : MonoBehaviour
     private void EndDrag()
     {
         isDrag = false;
+    }
+    
+    public void ResetPosition()
+    {
+        isDrag = false;
+        StartCoroutine(SmoothResetPosition());
+    }
+    
+    private IEnumerator SmoothResetPosition()
+    {
+        Vector3 startPosition = transform.position;
+        float elapsedTime = 0f;
+        float resetDuration = 0.5f;
+        
+        while (elapsedTime < resetDuration)
+        {
+            elapsedTime += Time.unscaledDeltaTime;
+            float t = elapsedTime / resetDuration;
+            t = Mathf.SmoothStep(0f, 1f, t);
+            transform.position = Vector3.Lerp(startPosition, initialPosition, t);
+            yield return null;
+        }
+        
+        transform.position = initialPosition;
     }
 
     private void UpdateMovement()
