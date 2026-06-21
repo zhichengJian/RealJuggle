@@ -29,21 +29,26 @@ public class GameOverManager : MonoBehaviour
             _gameOverPanel.SetActive(false);
         }
         
+        // 绑定按钮事件
         if (_restartButton != null)
         {
-            _restartButton.onClick.RemoveAllListeners();
             _restartButton.onClick.AddListener(RestartGame);
         }
         
         if (_mainMenuButton != null)
         {
-            _mainMenuButton.onClick.RemoveAllListeners();
             _mainMenuButton.onClick.AddListener(MainMenu);
         }
     }
     
     public void GameOver()
     {
+        // 挑战模式下不显示游戏结束面板
+        if (LevelManager.Instance != null && LevelManager.Instance.IsHeightChallengeMode())
+        {
+            return;
+        }
+        
         if (_gameOverPanel != null)
         {
             _gameOverPanel.SetActive(true);
@@ -90,5 +95,51 @@ public class GameOverManager : MonoBehaviour
         {
             LevelManager.Instance.MainMenu();
         }
+        
+        // 恢复挑战按钮显示
+        GameObject challengeBtn = GameObject.Find("ChallengeBtn");
+        if (challengeBtn == null)
+        {
+            challengeBtn = GameObject.Find("挑战");
+        }
+        if (challengeBtn == null)
+        {
+            challengeBtn = GameObject.Find("btn_challenge");
+        }
+        if (challengeBtn == null)
+        {
+            // 遍历所有根对象（包括禁用的）
+            foreach (GameObject rootObj in UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects())
+            {
+                challengeBtn = FindChallengeButton(rootObj.transform);
+                if (challengeBtn != null)
+                {
+                    break;
+                }
+            }
+        }
+        if (challengeBtn != null)
+        {
+            challengeBtn.SetActive(true);
+        }
+    }
+    
+    private GameObject FindChallengeButton(Transform parent)
+    {
+        if (parent.gameObject.name.Contains("挑战") || parent.gameObject.name.Contains("Challenge"))
+        {
+            return parent.gameObject;
+        }
+        
+        foreach (Transform child in parent)
+        {
+            GameObject found = FindChallengeButton(child);
+            if (found != null)
+            {
+                return found;
+            }
+        }
+        
+        return null;
     }
 }

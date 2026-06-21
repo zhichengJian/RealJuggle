@@ -249,6 +249,12 @@ public class RealJuggleShoe : MonoBehaviour
                     actualKickForce = kickForce * (1.0f + Mathf.Min(shoeVelocity.magnitude * 0.5f, 2.0f));
                 }
                 
+                // 挑战模式：增加踢力倍数
+                if (LevelManager.Instance != null && LevelManager.Instance.IsHeightChallengeMode())
+                {
+                    actualKickForce *= 3f; // 挑战模式踢力增加3倍
+                }
+                
                 ballRigidbody.AddForce(kickDirection * actualKickForce, ForceMode.Impulse);
                 
                 Vector3 randomTorque = new Vector3(
@@ -293,6 +299,12 @@ public class RealJuggleShoe : MonoBehaviour
                 if (shoeVelocity.magnitude > 1.0f)
                 {
                     actualKickForce = kickForce * (1.0f + Mathf.Min(shoeVelocity.magnitude * 0.5f, 2.0f));
+                }
+                
+                // 挑战模式：增加踢力倍数
+                if (LevelManager.Instance != null && LevelManager.Instance.IsHeightChallengeMode())
+                {
+                    actualKickForce *= 3f; // 挑战模式踢力增加3倍
                 }
                 
                 ballRigidbody.AddForce(kickDirection * actualKickForce, ForceMode.Impulse);

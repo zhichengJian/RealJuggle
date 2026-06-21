@@ -12,6 +12,10 @@ public class BallController : MonoBehaviour
     [Tooltip("砖块反弹系数")]
     [SerializeField] private float _brickBounceFactor = 0.5f;
     
+    private float _currentGravityScale = 1f; // 当前重力缩放（可动态修改）
+    private float _challengeGravityScale = 1f; // 挑战模式初始重力缩放
+    private bool _inChallengeMode = false; // 是否在挑战模式
+    
     [Header("延时参数")]
     [Tooltip("球开始下落的延时时间（秒）")]
     [SerializeField] private float _startDelay = 1f;
@@ -39,6 +43,29 @@ public class BallController : MonoBehaviour
             _rigidbody.isKinematic = true;
         }
         _fixedZPosition = transform.position.z;
+        _currentGravityScale = _gravityScale; // 初始化当前重力缩放
+    }
+    
+    // 设置重力缩放（用于挑战模式）
+    public void SetGravityScale(float scale)
+    {
+        _currentGravityScale = scale;
+        _challengeGravityScale = scale;
+        _inChallengeMode = true;
+    }
+    
+    // 获取重力缩放
+    public float GetGravityScale()
+    {
+        return _currentGravityScale;
+    }
+    
+    // 重置重力到默认值
+    public void ResetGravityScale()
+    {
+        _currentGravityScale = _gravityScale;
+        _challengeGravityScale = 1f;
+        _inChallengeMode = false;
     }
     
     public void Kick()
@@ -68,7 +95,13 @@ public class BallController : MonoBehaviour
         
         if (_rigidbody != null && GameState.Instance.isGameStarted && !_rigidbody.isKinematic)
         {
-            Physics.gravity = new Vector3(0, -9.81f * _gravityScale, 0);
+            // 挑战模式：使用默认重力，让鞋子的踢力决定球的高度
+            if (!_inChallengeMode)
+            {
+                // 普通模式：使用自定义重力
+                Physics.gravity = new Vector3(0, -9.81f * _currentGravityScale, 0);
+            }
+            // 挑战模式：使用Unity默认重力，让鞋子踢力发挥作用
             
             Vector3 currentPosition = _rigidbody.position;
             Vector3 velocity = _rigidbody.velocity;
@@ -93,7 +126,7 @@ public class BallController : MonoBehaviour
                 _rigidbody.velocity = velocity;
             }
             
-            if (currentPosition.y > _yMoveRange)
+            if (currentPosition.y > _yMoveRange && !(LevelManager.Instance != null && LevelManager.Instance.IsHeightChallengeMode()))
             {
                 currentPosition.y = _yMoveRange;
                 _rigidbody.position = currentPosition;
@@ -143,5 +176,8 @@ public class BallController : MonoBehaviour
             }
             _rigidbody.isKinematic = true;
         }
+        
+        // 重置重力缩放到默认值
+        ResetGravityScale();
     }
 }

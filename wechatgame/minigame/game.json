@@ -1,6 +1,8 @@
 
 {
   "deviceOrientation" : "portrait",
+  "debug" : false,
+  "showFPS" : false,
   "iOSHighPerformance" : true,
   "iOSHighPerformance+" : false,
   "subpackages"         : [
@@ -16,6 +18,9 @@
   "parallelPreloadSubpackages" : [
     {
       "name" : "wasmcode"
+    },
+    {
+      "name" : "data-package"
     }
   ],
   "plugins"                    : {
@@ -29,5 +34,21 @@
       ]
     }
   },
-  "workers"                    : "workers"
+  "workers"                    : "workers",
+  "preloadRule"                : {
+    "network" : {
+      "maxConcurrentRequests" : 10,
+      "maxRequestsPerHost" : 6
+    },
+    "cdn" : {
+      "enabled" : true
+    },
+    "cache" : {
+      "manifest": "cache-manifest.json"
+    }
+  },
+  "networkTimeout" : 10000,
+  "network" : {
+    "maxConcurrentRequests" : 10
+  }
 }

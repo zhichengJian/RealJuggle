@@ -161,7 +161,27 @@ public class ShopManager2 : MonoBehaviour
 
     public void ShowShopButton()
     {
-        if (_shopButton != null) _shopButton.SetActive(true);
+        if (_shopButton != null)
+        {
+            _shopButton.SetActive(true);
+            
+            // 确保按钮可交互
+            Button button = _shopButton.GetComponent<Button>();
+            if (button != null)
+            {
+                button.interactable = true;
+                button.enabled = true;
+            }
+            
+            // 确保 CanvasGroup 不影响按钮
+            CanvasGroup canvasGroup = _shopButton.GetComponent<CanvasGroup>();
+            if (canvasGroup != null)
+            {
+                canvasGroup.alpha = 1f;
+                canvasGroup.interactable = true;
+                canvasGroup.blocksRaycasts = true;
+            }
+        }
     }
 
     public void HideShopButton()
